@@ -28,7 +28,7 @@ You will be able to install the Threads Bullshit Blocker directly from the Chrom
 ### **Manual Installation (For Developers)**
 
 1. **Download the code**: Clone or download this repository to your local machine.  
-   git clone https://github.com/YOUR\_USERNAME/threads-bullshit-blocker.git
+   git clone https://github.com/dbccpage/threads-bullshit-blocker.git
 
 2. **Open Chrome Extensions**: Open Google Chrome and navigate to chrome://extensions.  
 3. **Enable Developer Mode**: In the top right corner, toggle the "Developer mode" switch on.  
@@ -45,6 +45,28 @@ The extension analyzes the text of each post on Threads against a comprehensive 
 * **Empty Intensifiers**: Words that add emotion but not substance.  
 * **Buzzword Soup**: Using jargon to sound impressive without saying anything.  
 * ...and 11 other categories\!
+
+## **Development Roadmap**
+
+Here's what's planned for the future of the Threads Bullshit Blocker:
+
+### **Version 1.1 (Short-Term)**
+
+* \[ \] **Detailed Analysis Panel**: Clicking a "Details" button on a flagged post will show a breakdown of which categories contributed to the BS score.  
+* \[ \] **User Whitelisting**: Ability to "trust" certain users, so their posts are never flagged.  
+* \[ \] **Improved Performance**: Optimize the DOM scanning to be more efficient on long feeds.
+
+### **Version 1.2 (Mid-Term)**
+
+* \[ \] **Firefox Support**: Port the extension to be compatible with Mozilla Firefox.  
+* \[ \] **Community Dictionary**: Allow users to suggest new bullshit words and phrases to be added to the dictionary.  
+* \[ \] **Historical Stats**: Track and display bullshit detection stats over time (e.g., this week, this month).
+
+### **Future Ideas (Long-Term)**
+
+* \[ \] **Multi-Language Support**: Expand the dictionary to detect bullshit in other languages.  
+* \[ \] **AI-Powered Detection**: Explore using a lightweight machine learning model to detect more nuanced forms of bullshit.  
+* \[ \] **Support for Other Social Media**: Adapt the extension to work on other platforms like X (Twitter) or Facebook.
 
 ## **Contributing**
 
