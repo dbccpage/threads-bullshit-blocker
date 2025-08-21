@@ -1,0 +1,70 @@
+/* Prefixed class names to avoid conflicts */
+.tbsb-blocked {
+  filter: blur(4px);
+  transition: filter 0.3s ease-in-out;
+}
+
+.tbsb-overlay {
+  position: absolute;
+  inset: 0; /* Modern way to set top, right, bottom, left to 0 */
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.tbsb-warning {
+  background-color: #fff;
+  color: #111;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  max-width: 90%;
+}
+
+.tbsb-warning h3 {
+  margin-top: 0;
+  color: #d93025;
+}
+
+.tbsb-warning ul {
+  list-style-type: none;
+  padding: 0;
+  font-size: 0.9em;
+  color: #5f6368;
+}
+
+.tbsb-show-btn {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.tbsb-show-btn:hover {
+  background-color: #185abc;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .tbsb-warning {
+    background-color: #2d2d2d;
+    color: #e8eaed;
+  }
+  .tbsb-warning h3 {
+    color: #f28b82;
+  }
+  .tbsb-warning ul {
+    color: #bdc1c6;
+  }
+}
