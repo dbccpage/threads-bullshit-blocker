@@ -4,10 +4,6 @@ class ThreadsBullshitDetector {
       enabled: true,
       threshold: 0.5
     };
-    this.stats = {
-      blocked: 0,
-      analyzed: 0
-    };
     // The bsDictionary is now loaded from bs_dictionary.js
     this.dictionary = typeof bsDictionary !== 'undefined' ? bsDictionary : {};
     this.init();
@@ -16,149 +12,156 @@ class ThreadsBullshitDetector {
   async init() {
     await this.loadSettings();
     if (this.settings.enabled) {
-      this.scanExistingPosts();
-      this.observeNewPosts();
+      // Use a delay to ensure the page is fully loaded before the first scan
+      setTimeout(() => {
+        this.scanExistingPosts();
+        this.observeNewPosts();
+      }, 2000);
     }
   }
 
   async loadSettings() {
-    const data = await chrome.storage.sync.get(['settings', 'stats']);
+    const data = await chrome.storage.sync.get(['settings']);
     this.settings = { ...this.settings, ...data.settings };
-    this.stats = { ...this.stats, ...data.stats };
   }
 
   calculateBullshitScore(text) {
-    if (!text || text.length < 20) return { score: 0, indicators: [] };
+    if (!text || text.trim().length < 10) {
+      return { score: 0, indicators: [] };
+    }
 
     const lowerText = text.toLowerCase();
-    const words = lowerText.split(/\s+/);
-    const wordCount = words.length;
+    const words = lowerText.split(/\s+/).filter(Boolean);
+    const wordCount = words.length > 0 ? words.length : 1;
     let score = 0;
     const indicators = new Set();
+    let spamCount = 0;
 
-    // Iterate over dictionary categories for scoring
+    const spamPatterns = this.dictionary["Spam & Bot Patterns"] || [];
+    spamPatterns.forEach(pattern => {
+      if (new RegExp(pattern, 'i').test(text)) {
+        spamCount++;
+      }
+    });
+
+    if (spamCount >= 3) {
+      return { score: 1.0, indicators: ["Spam & Bot Patterns"] };
+    }
+
     for (const category in this.dictionary) {
+      if (category === "Spam & Bot Patterns") continue;
+
       const patterns = this.dictionary[category];
-      let count = 0;
       patterns.forEach(pattern => {
-        if (new RegExp(pattern, 'gi').test(lowerText)) {
-          count++;
+        if (new RegExp(pattern, 'i').test(text)) {
+          indicators.add(category);
+          score += 0.05;
         }
       });
-
-      if (count > 0) {
-        indicators.add(category);
-        // Assign different weights to categories if desired
-        score += (count / wordCount) * (patterns.length * 0.01);
-      }
     }
     
-    // Add a multiplier for multiple red flags
+    score += spamCount * 0.3;
+
+    let normalizedScore = score * (10 / wordCount);
+
     if (indicators.size >= 3) {
-      score *= 1.2;
-    }
-    if (indicators.size >= 5) {
-      score *= 1.15;
+      normalizedScore *= 1.2;
     }
 
     return {
-      score: Math.min(score, 1.0),
+      score: Math.min(normalizedScore, 1.0),
       indicators: Array.from(indicators)
     };
   }
 
-  scanExistingPosts() {
-    document.querySelectorAll('[role="article"]').forEach(post => this.analyzePost(post));
+  // *** NEW, MORE ROBUST SCANNING LOGIC ***
+  findPosts(rootNode) {
+    // This is a more stable way to find posts. It looks for a user's avatar
+    // and then finds the main article container around it.
+    const avatarLinks = rootNode.querySelectorAll('a[href^="/t/"]');
+    const posts = new Set();
+    avatarLinks.forEach(link => {
+      const postArticle = link.closest('article');
+      if (postArticle) {
+        posts.add(postArticle);
+      }
+    });
+    return Array.from(posts);
   }
 
-  analyzePost(postElement) {
-    if (postElement.dataset.tbsbAnalyzed) return;
-    postElement.dataset.tbsbAnalyzed = 'true';
-
-    const textContent = postElement.innerText || "";
-    if (textContent.length < 20) return;
-
-    this.stats.analyzed++;
-    const { score, indicators } = this.calculateBullshitScore(textContent);
-
-    if (score >= this.settings.threshold) {
-      this.blockPost(postElement, score, indicators);
-    }
-    this.updateStats();
+  scanExistingPosts() {
+    this.findPosts(document.body).forEach(post => this.addCheckButton(post));
   }
   
-  blockPost(postElement, score, indicators) {
-    this.stats.blocked++;
-    postElement.classList.add('tbsb-blocked');
+  addCheckButton(postElement) {
+    if (postElement.querySelector('.tbsb-container')) return;
 
-    // Use createElement for better security and performance
-    const overlay = document.createElement('div');
-    overlay.className = 'tbsb-overlay';
+    const container = document.createElement('div');
+    container.className = 'tbsb-container';
 
-    const warningBox = document.createElement('div');
-    warningBox.className = 'tbsb-warning';
-    
-    const title = document.createElement('h3');
-    title.textContent = '🚨 Potential Bullshit Detected';
-    
-    const scoreDisplay = document.createElement('p');
-    scoreDisplay.innerHTML = `<strong>Score: ${(score * 100).toFixed(0)}%</strong>`;
-    
-    const indicatorsTitle = document.createElement('strong');
-    indicatorsTitle.textContent = 'Red Flags:';
-    
-    const indicatorsList = document.createElement('ul');
-    indicators.slice(0, 3).forEach(ind => {
-        const item = document.createElement('li');
-        item.textContent = ind;
-        indicatorsList.appendChild(item);
-    });
+    const button = document.createElement('button');
+    button.textContent = 'Check BS Score 🛡️';
+    button.className = 'tbsb-check-btn';
 
-    const showButton = document.createElement('button');
-    showButton.className = 'tbsb-show-btn';
-    showButton.textContent = 'Show Post';
-    showButton.onclick = () => {
-      postElement.classList.remove('tbsb-blocked');
-      overlay.remove();
+    button.onclick = (e) => {
+        e.stopPropagation();
+        const textContent = this.extractPostText(postElement);
+        if (!textContent) {
+            button.textContent = "Error: Could not find text.";
+            setTimeout(() => {
+                button.textContent = 'Check BS Score 🛡️';
+            }, 2000);
+            return;
+        }
+        const { score, indicators } = this.calculateBullshitScore(textContent);
+        
+        const resultDisplay = document.createElement('div');
+        resultDisplay.className = 'tbsb-result';
+        let indicatorText = indicators.length > 0 ? indicators.slice(0, 2).join(', ') : 'None';
+        resultDisplay.innerHTML = `<strong>Score: ${(score * 100).toFixed(0)}%</strong> | <small>Flags: ${indicatorText}</small>`;
+        
+        container.innerHTML = '';
+        container.appendChild(resultDisplay);
     };
 
-    warningBox.append(title, scoreDisplay, indicatorsTitle, indicatorsList, showButton);
-    overlay.appendChild(warningBox);
-    postElement.style.position = 'relative';
-    postElement.appendChild(overlay);
+    container.appendChild(button);
+    
+    // Inject the button in a more reliable location, at the bottom of the post.
+    postElement.appendChild(container);
+  }
+
+  // *** NEW, MORE ROBUST TEXT EXTRACTION ***
+  extractPostText(postElement) {
+    // This looks for the specific test ID Threads uses for post text.
+    const textElement = postElement.querySelector('div[data-testid="post-text"]');
+    if (textElement) {
+        return textElement.innerText;
+    }
+    // Fallback for different post structures (e.g., quoted posts)
+    const fallbackText = postElement.querySelector('div[dir="auto"] > span');
+    if(fallbackText) {
+        return fallbackText.innerText;
+    }
+    return '';
   }
 
   observeNewPosts() {
-    // More targeted observer for performance
-    const feedContainer = document.querySelector('main[role="main"]');
-    if (!feedContainer) {
-        // Fallback to body if main container not found
-        console.warn("BS Blocker: Could not find main feed container, observing body.");
-        this.observer = new MutationObserver(mutations => this.handleMutations(mutations));
-        this.observer.observe(document.body, { childList: true, subtree: true });
-        return;
-    }
-
-    this.observer = new MutationObserver(mutations => this.handleMutations(mutations));
-    this.observer.observe(feedContainer, { childList: true, subtree: true });
-  }
-  
-  handleMutations(mutations) {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeType === 1) { // ELEMENT_NODE
-            if (node.matches('[role="article"]')) {
-              this.analyzePost(node);
-            } else {
-              node.querySelectorAll('[role="article"]').forEach(post => this.analyzePost(post));
+    const observer = new MutationObserver((mutations) => {
+      // Use a timeout to handle rapid-fire changes from scrolling
+      let timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType === 1) {
+              this.findPosts(node).forEach(post => this.addCheckButton(post));
             }
           }
         }
-      }
-  }
+      }, 500);
+    });
 
-  updateStats() {
-    chrome.storage.sync.set({ stats: this.stats });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 }
 

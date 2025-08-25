@@ -14,7 +14,7 @@ const bsDictionary = {
     "leading voices", "officials state", "professionals", "research proves",
     "researchers", "scientists say", "sources confirm", "specialists",
     "studies show", "the establishment", "the science confirms", "they say",
-    "according to the bible" 
+    "according to the bible"
   ],
   "Empty Intensifiers": [
     "absolutely", "actually", "amazingly", "astonishingly", "awesome",
@@ -37,9 +37,7 @@ const bsDictionary = {
     "proactive", "quantum", "revolutionary", "robust", "scalable",
     "seamless", "state-of-the-art", "streamline", "sustainable", "synergy",
     "unpack", "upstream", "wellness",
-    "wokeness", 
-    "woke", 
-    "growth strategy" 
+    "wokeness", "woke", "growth strategy"
   ],
   "Emotional Manipulation": [
     "alarming", "answer", "breakthrough", "catastrophic", "crisis",
@@ -47,7 +45,7 @@ const bsDictionary = {
     "emergency", "empowerment", "fix", "forbidden", "harmful",
     "liberation", "life-changing", "miracle", "revelation", "secret",
     "shocking", "solution", "terrifying", "toxic", "transformation", "urgent",
-    "slavery"  (when used hyperbolically)
+    "slavery"
   ],
   "Weasel Words": [
     "acts like", "almost", "as low as", "can be", "could", "fairly",
@@ -61,18 +59,14 @@ const bsDictionary = {
     "Are we expected to believe...?", "Could it be that...?", "Doesn't that prove...?",
     "Don't you think...?", "How can we ignore...?", "Isn't it obvious...?",
     "Isn't it time we...?", "What if...?", "Why are they hiding...?",
-    "Why won't they tell us...?",
-    "Why would I follow it?", 
-    "Is it true that...?" 
+    "Why won't they tell us...?", "Why would I follow it?", "Is it true that...?"
   ],
   "Crowd Appeal": [
     "a growing movement", "common knowledge", "common sense", "everybody knows",
     "everyone's talking about", "join the conversation", "millions believe",
     "people are saying", "the court of public opinion", "trending",
     "universally accepted", "viral", "widely known", "word on the street",
-    "a lot of people debate", 
-    "most of humanity", 
-    "they largely support" 
+    "a lot of people debate", "most of humanity", "they largely support"
   ],
   "Temporal Vagueness": [
     "any day now", "at the right time", "before long", "coming soon",
@@ -85,8 +79,7 @@ const bsDictionary = {
     "countless", "considerably", "dramatically", "enormous", "exponentially",
     "heaps of", "huge", "loads of", "massive", "markedly", "multiple",
     "numerous", "oodles of", "several", "significantly", "substantially", "various",
-    "hundreds and hundreds", 
-    "all the nonsense" 
+    "hundreds and hundreds", "all the nonsense"
   ],
   "Corporate Speak": [
     "at the end of the day", "bandwidth", "boil the ocean", "circle back",
@@ -103,8 +96,7 @@ const bsDictionary = {
     "Not gonna lie...", "Plot twist", "Read that again", "Take it from me",
     "The algorithm won't show you this", "This is the thread you need to read",
     "This will blow your mind", "Trust me on this", "Unpopular opinion",
-    "Wait for it", "You won't believe...",
-    "Am I pretty or not?" 
+    "Wait for it", "You won't believe...", "Am I pretty or not?"
   ],
   "The Non-Apology": [
     "I regret if anyone was offended", "I'm sorry, but...", "I'm sorry if you were offended",
@@ -121,5 +113,19 @@ const bsDictionary = {
     "right-sizing", "sanitary landfill", "special operation",
     "streamlining operations", "sub-optimal outcome", "technicolor yawn",
     "terminological inexactitude", "vertically challenged"
+  ],
+  // New category for spam and bot detection
+  "Spam & Bot Patterns": [
+    "Job\\s*:",
+	"Name\\s*:",
+	"Origin\\s*:",
+    "Height\\s*:",
+	"Status\\s*:",
+    "Age\\s*:",
+    "Looking for my king",
+    "DM me for fun",
+    "Follow my other account",
+    "Click the link in my bio",
+    "I have zero likes"
   ]
 };

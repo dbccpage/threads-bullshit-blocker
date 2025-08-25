@@ -6,7 +6,7 @@
 
 .tbsb-overlay {
   position: absolute;
-  inset: 0; /* Modern way to set top, right, bottom, left to 0 */
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
   display: flex;
@@ -55,6 +55,33 @@
   background-color: #185abc;
 }
 
+/* NEW STYLES FOR BUTTON AND RESULT */
+.tbsb-check-btn {
+  background-color: #f0f2f5;
+  color: #65676b;
+  border: 1px solid #ccd0d5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 12px;
+  transition: background-color 0.2s;
+}
+
+.tbsb-check-btn:hover {
+  background-color: #e4e6eb;
+}
+
+.tbsb-result {
+  margin-left: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #fffbe6;
+  border: 1px solid #ffecb3;
+  color: #8a6d3b;
+  border-radius: 6px;
+}
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .tbsb-warning {
@@ -66,5 +93,18 @@
   }
   .tbsb-warning ul {
     color: #bdc1c6;
+  }
+  .tbsb-check-btn {
+    background-color: #3a3b3c;
+    color: #e4e6eb;
+    border-color: #4e4f50;
+  }
+  .tbsb-check-btn:hover {
+    background-color: #4e4f50;
+  }
+  .tbsb-result {
+    background-color: #4e4f50;
+    border-color: #60532d;
+    color: #fff59d;
   }
 }
